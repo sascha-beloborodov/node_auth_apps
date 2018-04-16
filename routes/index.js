@@ -32,14 +32,50 @@ router.get('/logout', function (req, res) {
   res.redirect('/');
 });
 
-router.get('/applications', function (req, res) {
-  res.render('application.ejs', {
-    user: req.user
+router.get('/applications', isLoggedIn, function (req, res) {
+  App.find().exec(function(err, apps) {
+    if (err) {
+      res.render('application.ejs', {
+        error: 1
+      });
+    } else {
+      res.render('application.ejs', {
+        error: 0,
+        apps: apps
+      });
+    }
+  });
+});
+
+router.get('/applications/csv', isLoggedIn, function (req, res) {
+  App.find().exec(function(err, apps) {
+    if (err) {s
+      // todo : show error to panel
+      req.flash('fetchError', 'Cannot make csv.');
+      res.redirect('/');
+    } else {
+      // hope there will be only small files
+      res.writeHead(200, {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': 'attachment; filename=export.csv'
+      });
+
+      apps.forEach(function(item) {
+        res.write('"' + item.fullName.toString().replace(/\"/g, '""') + '",');
+        res.write('"' + item.email.toString().replace(/\"/g, '""') + '",');
+        res.write('"' + item.phone.toString().replace(/\"/g, '""') + '",');
+        res.write('"' + item.link.toString().replace(/\"/g, '""') + '",');
+        res.write('"' + (item.comment || '').toString().replace(/\"/g, '""') + '",');
+        res.write('"' + item.createAt.toString().replace(/\"/g, '""') + '";');
+        res.write('\r\n');
+      });
+
+      res.end();
+    }
   });
 });
 
 router.post('/applications', function (req, res) {
-  console.log(req.body);
   try {
     var newApp = new App(req.body);
     newApp.save(function (err) {

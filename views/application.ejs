@@ -3,9 +3,30 @@
     <body>
         <div class="col-sm-8 col-sm-offset-2">
             <div class="text-center">
-                <h1 class=" fa fa-user"> Application</h1>
+                <h1 class=" fa fa-user"> Applications</h1>
                 <br>
-                
+                <table class="table">
+                    <tr>
+                        <td>Имя</td>
+                        <td>Почта</td>
+                        <td>Телефон</td>
+                        <td>Ссылка</td>
+                        <td>Комментарий</td>
+                        <td>Добавлено</td>
+                    </tr>
+                    <% if (apps) { %>
+                        <% apps.forEach(function(app) { %>
+                            <tr>
+                                <td><%= app.fullName %></td>
+                                <td><%= app.email %></td>
+                                <td><%= app.phone %></td>
+                                <td><%= app.link %></td>
+                                <td><%= app.comment %></td>
+                                <td><%= app.createdAt %></td>
+                            </tr>
+                        <% }); %>
+                    <% } %>
+                </table>
             </div>
         </div>
     </body>
